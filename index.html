@@ -1,357 +1,481 @@
 <!DOCTYPE html>
-<html lang="tr" class="scroll-smooth">
+<html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Okan Özdemir | Portfolyo</title>
-    <meta name="description" content="Okan Özdemir kişisel GitHub portfolyo sayfası.">
-    
+    <title>Okan Özdemir | AI Powered Cyber Portfolio</title>
+    <meta name="description" content="Okan Özdemir Kişisel Portfolyo - Gemini AI Entegrasyonlu">
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Font Awesome -->
+    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&family=VT323&display=swap" rel="stylesheet">
+    <!-- Marked JS for Markdown -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
     <script>
         tailwind.config = {
-            darkMode: 'class',
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
+                        orbitron: ['Orbitron', 'sans-serif'],
+                        rajdhani: ['Rajdhani', 'sans-serif'],
+                        terminal: ['VT323', 'monospace'],
                     },
                     colors: {
-                        github: {
-                            dark: '#0d1117',
-                            card: '#161b22',
-                            border: '#30363d',
-                            text: '#c9d1d9',
-                            btn: '#238636',
-                            btnHover: '#2ea043'
+                        cyber: {
+                            black: '#050505',
+                            dark: '#0a0a0f',
+                            primary: '#00ff9d', 
+                            secondary: '#bc13fe',
+                            accent: '#facc15'
                         }
+                    },
+                    animation: {
+                        'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'spin-slow': 'spin 15s linear infinite',
                     }
                 }
             }
         }
     </script>
-    
+
     <style>
-        body {
-            background-color: #0d1117;
-            color: #c9d1d9;
+        body { background-color: #050505; color: #e0e0e0; overflow-x: hidden; }
+        #canvas-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0a0a0f; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #00ff9d; }
+
+        /* Glitch Effect */
+        .glitch { position: relative; color: #fff; }
+        .glitch::before, .glitch::after {
+            content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #050505;
         }
-        .repo-card:hover {
-            transform: translateY(-5px);
-            border-color: #8b949e;
+        .glitch::before {
+            left: 2px; text-shadow: -1px 0 #bc13fe; clip: rect(24px, 550px, 90px, 0); animation: glitch-anim 3s infinite linear alternate-reverse;
         }
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
+        .glitch::after {
+            left: -2px; text-shadow: -1px 0 #00ff9d; clip: rect(85px, 550px, 140px, 0); animation: glitch-anim 2s infinite linear alternate-reverse;
         }
-        ::-webkit-scrollbar-track {
-            background: #0d1117;
+        @keyframes glitch-anim {
+            0% { clip: rect(10px, 9999px, 31px, 0); } 20% { clip: rect(70px, 9999px, 68px, 0); }
+            40% { clip: rect(35px, 9999px, 6px, 0); } 60% { clip: rect(80px, 9999px, 15px, 0); }
+            80% { clip: rect(15px, 9999px, 88px, 0); } 100% { clip: rect(60px, 9999px, 2px, 0); }
         }
-        ::-webkit-scrollbar-thumb {
-            background: #30363d;
-            border-radius: 4px;
+
+        /* Holo Cards */
+        .holo-card {
+            background: rgba(10, 10, 15, 0.6); border: 1px solid rgba(0, 255, 157, 0.1); backdrop-filter: blur(10px);
+            transition: all 0.4s ease; position: relative; overflow: hidden;
         }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #8b949e;
+        .holo-card:hover { transform: translateY(-5px); border-color: #00ff9d; box-shadow: 0 0 20px rgba(0, 255, 157, 0.2); }
+        
+        /* Terminal Overlay */
+        #terminal-overlay {
+            background: rgba(5, 5, 5, 0.95);
+            border: 1px solid #bc13fe;
+            box-shadow: 0 0 30px rgba(188, 19, 254, 0.3);
+            font-family: 'VT323', monospace;
+            font-size: 1.1rem;
         }
+        .terminal-text-green { color: #00ff9d; text-shadow: 0 0 2px #00ff9d; }
+        .terminal-text-purple { color: #bc13fe; text-shadow: 0 0 2px #bc13fe; }
+        .blinking-cursor { animation: blink 1s step-end infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        /* Markdown Styles inside Terminal */
+        .markdown-content strong { color: #fff; font-weight: bold; }
+        .markdown-content em { color: #facc15; font-style: italic; }
+        .markdown-content ul { list-style-type: square; margin-left: 1rem; color: #aaa; }
     </style>
 </head>
-<body class="antialiased min-h-screen flex flex-col">
+<body class="font-rajdhani min-h-screen flex flex-col relative">
+
+    <canvas id="canvas-bg"></canvas>
 
     <!-- Navbar -->
-    <nav class="sticky top-0 z-50 bg-[#0d1117]/90 backdrop-blur-md border-b border-github-border">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                <div class="flex items-center">
-                    <i class="fab fa-github text-3xl text-white mr-3"></i>
-                    <span class="font-bold text-xl text-white tracking-tight">Okan Özdemir</span>
-                </div>
-                <div class="hidden md:block">
-                    <div class="ml-10 flex items-baseline space-x-4">
-                        <a href="#home" class="hover:bg-github-border px-3 py-2 rounded-md text-sm font-medium transition-colors">Ana Sayfa</a>
-                        <a href="#about" class="hover:bg-github-border px-3 py-2 rounded-md text-sm font-medium transition-colors">Hakkımda</a>
-                        <a href="#projects" class="hover:bg-github-border px-3 py-2 rounded-md text-sm font-medium transition-colors">Projeler</a>
-                        <a href="#contact" class="bg-github-btn hover:bg-github-btnHover text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">İletişim</a>
-                    </div>
-                </div>
-                <!-- Mobile menu button -->
-                <div class="-mr-2 flex md:hidden">
-                    <button type="button" onclick="document.getElementById('mobile-menu').classList.toggle('hidden')" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none">
-                        <i class="fas fa-bars text-xl"></i>
-                    </button>
-                </div>
-            </div>
+    <nav class="w-full py-6 px-4 md:px-12 flex justify-between items-center backdrop-blur-sm border-b border-white/5 z-40 fixed top-0 w-full bg-cyber-black/80">
+        <div class="text-2xl font-orbitron font-bold text-white tracking-wider cursor-pointer" onclick="window.scrollTo(0,0)">
+            O<span class="text-cyber-primary">Z</span>D
         </div>
-        
-        <!-- Mobile Menu -->
-        <div class="hidden md:hidden bg-github-card border-b border-github-border" id="mobile-menu">
-            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                <a href="#home" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-github-border">Ana Sayfa</a>
-                <a href="#about" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-github-border">Hakkımda</a>
-                <a href="#projects" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-github-border">Projeler</a>
-                <a href="#contact" class="block px-3 py-2 rounded-md text-base font-medium text-github-btnHover">İletişim</a>
+        <div class="flex items-center gap-6">
+            <button onclick="toggleTerminal()" class="hidden md:flex items-center gap-2 border border-cyber-secondary text-cyber-secondary px-4 py-1 hover:bg-cyber-secondary hover:text-white transition-all font-orbitron text-sm tracking-widest animate-pulse">
+                <i class="fas fa-terminal"></i> NEURAL LINK
+            </button>
+            <div class="flex gap-4 text-sm md:text-lg tracking-widest font-bold">
+                <a href="#about" class="hover:text-cyber-primary transition-colors">HAKKIMDA</a>
+                <a href="#projects" class="hover:text-cyber-primary transition-colors">PROJELER</a>
             </div>
         </div>
     </nav>
 
+    <!-- Terminal Overlay (Hidden by default) -->
+    <div id="terminal-overlay" class="fixed inset-0 z-50 hidden flex-col m-4 md:m-20 rounded-lg overflow-hidden">
+        <!-- Terminal Header -->
+        <div class="bg-gray-900 p-2 flex justify-between items-center border-b border-gray-700">
+            <div class="flex gap-2">
+                <div class="w-3 h-3 rounded-full bg-red-500 hover:bg-red-400 cursor-pointer" onclick="toggleTerminal()"></div>
+                <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                <div class="w-3 h-3 rounded-full bg-green-500"></div>
+            </div>
+            <div class="text-gray-400 text-sm">gemini-ai-core@okan.dev</div>
+        </div>
+        
+        <!-- Terminal Body -->
+        <div id="terminal-body" class="flex-1 p-4 overflow-y-auto text-green-500 bg-black/95" onclick="document.getElementById('hidden-input').focus()">
+            <div class="mb-4 text-gray-400">
+                System initialized...<br>
+                Gemini AI Core connected.<br>
+                Type <span class="text-white">'help'</span> for commands.<br>
+                Try <span class="text-purple-400">'ai_scan'</span> or <span class="text-purple-400">'ask [question]'</span>.
+            </div>
+            <div id="terminal-history"></div>
+            <div class="flex items-center mt-2">
+                <span class="mr-2 text-blue-400">guest@okan:~$</span>
+                <span id="typed-command" class="text-white"></span><span class="blinking-cursor text-white">_</span>
+            </div>
+        </div>
+        
+        <!-- Mobile Controls for Terminal -->
+        <div class="md:hidden grid grid-cols-4 gap-1 p-2 bg-gray-900 border-t border-gray-700">
+            <button onclick="execCmd('help')" class="text-xs bg-gray-800 text-white p-2">HELP</button>
+            <button onclick="execCmd('ai_scan')" class="text-xs bg-purple-900 text-white p-2">SCAN</button>
+            <button onclick="promptAI()" class="text-xs bg-purple-900 text-white p-2">CHAT</button>
+            <button onclick="toggleTerminal()" class="text-xs bg-red-900 text-white p-2">CLOSE</button>
+        </div>
+    </div>
+    <input type="text" id="hidden-input" class="absolute opacity-0 top-0" autocomplete="off">
+
     <!-- Hero Section -->
-    <section id="home" class="flex-grow flex items-center justify-center py-20 px-4">
-        <div class="text-center max-w-3xl mx-auto animate-fade-in-up">
-            <div class="relative inline-block mb-6">
-                <img id="profile-img" src="https://github.com/Okan-ozdemir.png" alt="Okan Özdemir" class="w-32 h-32 rounded-full border-4 border-github-border shadow-xl mx-auto">
-                <div class="absolute bottom-0 right-0 bg-green-500 w-5 h-5 rounded-full border-4 border-[#0d1117]" title="Hireable"></div>
-            </div>
-            
-            <h1 class="text-4xl md:text-6xl font-bold text-white mb-4 tracking-tight">
-                Merhaba, ben <span class="text-blue-400" id="profile-name">Okan Özdemir</span>
-            </h1>
-            
-            <p class="text-xl text-gray-400 mb-8 max-w-2xl mx-auto" id="profile-bio">
-                Yazılım Geliştirici & Açık Kaynak Meraklısı.
-            </p>
-            
-            <div class="flex flex-wrap justify-center gap-4 text-gray-400 mb-8">
-                <div class="flex items-center bg-github-card px-4 py-2 rounded-full border border-github-border">
-                    <i class="fas fa-users text-yellow-500 mr-2"></i>
-                    <span id="followers">...</span> Takipçi
-                </div>
-                <div class="flex items-center bg-github-card px-4 py-2 rounded-full border border-github-border">
-                    <i class="fas fa-code-branch text-blue-500 mr-2"></i>
-                    <span id="public-repos">...</span> Repo
-                </div>
-                <div class="flex items-center bg-github-card px-4 py-2 rounded-full border border-github-border" id="location-container">
-                    <i class="fas fa-map-marker-alt text-red-500 mr-2"></i>
-                    <span id="location">Lokasyon</span>
+    <section id="about" class="flex-grow flex items-center justify-center px-4 relative z-10 pt-32 pb-20">
+        <div class="max-w-5xl w-full grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+            <div class="order-2 md:order-1 animate-slide-in">
+                <div class="text-cyber-primary font-mono mb-2 text-lg">System.Initialize(User);</div>
+                <h1 class="text-5xl md:text-7xl font-bold font-orbitron text-white mb-4 glitch" data-text="OKAN ÖZDEMİR">
+                    OKAN ÖZDEMİR
+                </h1>
+                <h2 class="text-3xl md:text-4xl font-orbitron text-white/80 mb-6">
+                    FULL STACK DEV
+                </h2>
+                <p class="text-gray-400 text-lg md:text-xl mb-8 leading-relaxed border-l-2 border-cyber-primary pl-4" id="bio-text">
+                    Veri yükleniyor...
+                </p>
+                <div class="flex flex-wrap gap-4">
+                    <button onclick="toggleTerminal()" class="px-8 py-3 bg-cyber-secondary/20 border border-cyber-secondary text-cyber-secondary font-bold hover:bg-cyber-secondary hover:text-white transition-all duration-300 font-orbitron tracking-widest">
+                        <i class="fas fa-microchip mr-2"></i> AI TERMINAL
+                    </button>
+                    <a href="https://github.com/Okan-ozdemir" target="_blank" class="px-8 py-3 bg-cyber-primary/10 border border-cyber-primary text-cyber-primary font-bold hover:bg-cyber-primary hover:text-black transition-all duration-300 font-orbitron tracking-widest">
+                        GITHUB
+                    </a>
                 </div>
             </div>
-
-            <div class="flex justify-center space-x-4">
-                <a href="https://github.com/Okan-ozdemir" target="_blank" class="bg-github-btn hover:bg-github-btnHover text-white px-6 py-3 rounded-lg font-bold transition-all shadow-lg flex items-center">
-                    <i class="fab fa-github mr-2"></i> GitHub Profili
-                </a>
-                <a href="#projects" class="bg-github-border hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-bold transition-all shadow-lg">
-                    Projelerimi Gör
-                </a>
+            <div class="order-1 md:order-2 flex justify-center relative">
+                <div class="absolute inset-0 bg-gradient-to-r from-cyber-primary to-cyber-secondary opacity-20 blur-3xl rounded-full"></div>
+                <img id="profile-img" src="https://github.com/Okan-ozdemir.png" alt="Okan Özdemir" class="w-48 h-48 md:w-64 md:h-64 rounded-full border-4 border-cyber-dark relative z-10 grayscale hover:grayscale-0 transition-all duration-500 shadow-[0_0_30px_rgba(0,255,157,0.3)] object-cover">
+                <div class="absolute w-60 h-60 md:w-80 md:h-80 border border-cyber-primary/30 rounded-full animate-pulse-fast"></div>
+                <div class="absolute w-72 h-72 md:w-96 md:h-96 border border-dashed border-cyber-secondary/30 rounded-full animate-spin-slow"></div>
             </div>
         </div>
     </section>
 
-    <!-- Tech Stack / Skills (Placeholder - You can edit this) -->
-    <section id="about" class="py-16 bg-github-card border-y border-github-border">
-        <div class="max-w-6xl mx-auto px-4">
-            <h2 class="text-3xl font-bold text-white mb-10 text-center flex items-center justify-center">
-                <i class="fas fa-laptop-code text-blue-400 mr-3"></i> Teknolojiler & Yetenekler
-            </h2>
-            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 text-center">
-                <!-- Skill Items -->
-                <div class="p-4 hover:bg-github-dark rounded-lg transition-colors cursor-default">
-                    <i class="fab fa-js text-yellow-400 text-4xl mb-2"></i>
-                    <p class="font-semibold">JavaScript</p>
-                </div>
-                <div class="p-4 hover:bg-github-dark rounded-lg transition-colors cursor-default">
-                    <i class="fab fa-html5 text-orange-500 text-4xl mb-2"></i>
-                    <p class="font-semibold">HTML5</p>
-                </div>
-                <div class="p-4 hover:bg-github-dark rounded-lg transition-colors cursor-default">
-                    <i class="fab fa-css3-alt text-blue-500 text-4xl mb-2"></i>
-                    <p class="font-semibold">CSS3</p>
-                </div>
-                <div class="p-4 hover:bg-github-dark rounded-lg transition-colors cursor-default">
-                    <i class="fab fa-react text-cyan-400 text-4xl mb-2"></i>
-                    <p class="font-semibold">React</p>
-                </div>
-                <div class="p-4 hover:bg-github-dark rounded-lg transition-colors cursor-default">
-                    <i class="fab fa-git-alt text-red-500 text-4xl mb-2"></i>
-                    <p class="font-semibold">Git</p>
-                </div>
-                <div class="p-4 hover:bg-github-dark rounded-lg transition-colors cursor-default">
-                    <i class="fab fa-python text-blue-300 text-4xl mb-2"></i>
-                    <p class="font-semibold">Python</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Projects Section (Dynamic) -->
-    <section id="projects" class="py-16 px-4">
+    <!-- Projects Section -->
+    <section id="projects" class="py-20 px-4 relative z-10 bg-black/50">
         <div class="max-w-6xl mx-auto">
-            <h2 class="text-3xl font-bold text-white mb-4 flex items-center">
-                <i class="fas fa-project-diagram text-green-400 mr-3"></i> Son Projeler
-            </h2>
-            <p class="text-gray-400 mb-10">GitHub üzerindeki en son güncellenen public depolarım.</p>
-            
-            <div id="repos-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Loading State -->
-                <div class="col-span-full text-center py-10 text-gray-500">
-                    <i class="fas fa-circle-notch fa-spin text-3xl mb-3"></i>
-                    <p>Projeler yükleniyor...</p>
+            <div class="flex items-end gap-4 mb-12 border-b border-gray-800 pb-4">
+                <h2 class="text-3xl md:text-4xl font-orbitron font-bold text-white">
+                    <span class="text-cyber-primary">02.</span> PROJELERİM
+                </h2>
+                <span class="text-gray-500 font-mono text-sm mb-1 hidden md:block animate-pulse">Fetching from GitHub API...</span>
+            </div>
+            <div id="loader" class="flex justify-center py-20">
+                <div class="relative w-16 h-16">
+                    <div class="absolute w-full h-full border-4 border-cyber-primary/30 rounded-full"></div>
+                    <div class="absolute w-full h-full border-t-4 border-cyber-primary rounded-full" style="animation: spin 1s linear infinite;"></div>
                 </div>
             </div>
-            
-            <div class="text-center mt-12">
-                <a href="https://github.com/Okan-ozdemir?tab=repositories" target="_blank" class="text-blue-400 hover:underline">
-                    Tüm repoları görüntüle <i class="fas fa-arrow-right ml-1"></i>
-                </a>
-            </div>
+            <div id="projects-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 hidden"></div>
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer id="contact" class="bg-github-card border-t border-github-border mt-auto">
-        <div class="max-w-6xl mx-auto py-12 px-4">
-            <div class="flex flex-col md:flex-row justify-between items-center">
-                <div class="mb-6 md:mb-0 text-center md:text-left">
-                    <h3 class="text-xl font-bold text-white mb-2">İletişime Geçin</h3>
-                    <p class="text-gray-400 text-sm max-w-md">
-                        Projeler hakkında konuşmak veya iş birliği yapmak için sosyal medya hesaplarımdan bana ulaşabilirsiniz.
-                    </p>
-                </div>
-                
-                <div class="flex space-x-6">
-                    <a href="https://github.com/Okan-ozdemir" target="_blank" class="text-gray-400 hover:text-white transition-colors text-2xl">
-                        <i class="fab fa-github"></i>
-                    </a>
-                    <a href="#" class="text-gray-400 hover:text-blue-400 transition-colors text-2xl">
-                        <i class="fab fa-twitter"></i>
-                    </a>
-                    <a href="#" class="text-gray-400 hover:text-blue-600 transition-colors text-2xl">
-                        <i class="fab fa-linkedin"></i>
-                    </a>
-                    <a href="mailto:email@example.com" class="text-gray-400 hover:text-red-400 transition-colors text-2xl">
-                        <i class="fas fa-envelope"></i>
-                    </a>
-                </div>
-            </div>
-            
-            <div class="border-t border-github-border mt-8 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500">
-                <p>&copy; <span id="year"></span> Okan Özdemir. Tüm hakları saklıdır.</p>
-                <p class="mt-2 md:mt-0">GitHub Pages ile oluşturuldu.</p>
-            </div>
-        </div>
+    <footer class="py-8 text-center border-t border-white/10 relative z-10 bg-cyber-black mt-auto">
+        <p class="text-gray-500 text-sm font-mono">
+            &copy; 2025 Okan Özdemir <br>
+            <span class="text-cyber-secondary">System Status: ONLINE</span>
+        </p>
     </footer>
 
-    <!-- JavaScript for Dynamic Data -->
     <script>
-        // Set current year
-        document.getElementById('year').textContent = new Date().getFullYear();
+        // --- CONFIG ---
+        const GITHUB_USERNAME = 'Okan-ozdemir';
+        // API KEY: Normalde sunucudan gelir, demo için buraya eklenebilir.
+        const apiKey = ""; 
+        let globalUserData = null;
+        let globalRepoData = null;
 
-        const username = 'Okan-ozdemir';
-        const userApiUrl = `https://api.github.com/users/${username}`;
-        const reposApiUrl = `https://api.github.com/users/${username}/repos?sort=updated&per_page=6`;
+        // --- CANVAS ANIMATION ---
+        const canvas = document.getElementById('canvas-bg');
+        const ctx = canvas.getContext('2d');
+        let particlesArray;
+        function setCanvasSize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        setCanvasSize();
+        window.addEventListener('resize', () => { setCanvasSize(); initParticles(); });
+        class Particle {
+            constructor(x, y, directionX, directionY, size) {
+                this.x = x; this.y = y; this.directionX = directionX; this.directionY = directionY; this.size = size;
+            }
+            draw() { ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false); ctx.fillStyle = '#00ff9d'; ctx.fill(); }
+            update() {
+                if (this.x > canvas.width || this.x < 0) this.directionX = -this.directionX;
+                if (this.y > canvas.height || this.y < 0) this.directionY = -this.directionY;
+                this.x += this.directionX; this.y += this.directionY; this.draw();
+            }
+        }
+        function initParticles() {
+            particlesArray = [];
+            let numberOfParticles = (canvas.height * canvas.width) / 15000; 
+            for (let i = 0; i < numberOfParticles; i++) {
+                let size = (Math.random() * 2) + 1;
+                let x = (Math.random() * ((innerWidth - size * 2) - (size * 2)) + size * 2);
+                let y = (Math.random() * ((innerHeight - size * 2) - (size * 2)) + size * 2);
+                let directionX = (Math.random() * 1) - 0.5; let directionY = (Math.random() * 1) - 0.5;
+                particlesArray.push(new Particle(x, y, directionX, directionY, size));
+            }
+        }
+        function connect() {
+            for (let a = 0; a < particlesArray.length; a++) {
+                for (let b = a; b < particlesArray.length; b++) {
+                    let distance = ((particlesArray[a].x - particlesArray[b].x) ** 2) + ((particlesArray[a].y - particlesArray[b].y) ** 2);
+                    if (distance < (canvas.width/7) * (canvas.height/7)) {
+                        ctx.strokeStyle = 'rgba(0, 255, 157,' + (1 - (distance/20000)) + ')';
+                        ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(particlesArray[a].x, particlesArray[a].y); ctx.lineTo(particlesArray[b].x, particlesArray[b].y); ctx.stroke();
+                    }
+                }
+            }
+        }
+        function animate() { requestAnimationFrame(animate); ctx.clearRect(0, 0, innerWidth, innerHeight); for (let i = 0; i < particlesArray.length; i++) particlesArray[i].update(); connect(); }
 
-        // Fetch User Data
-        async function fetchProfile() {
+        // --- GITHUB & GEMINI DATA ---
+        async function fetchAllData() {
             try {
-                const response = await fetch(userApiUrl);
-                if (!response.ok) throw new Error('Kullanıcı bulunamadı');
-                const data = await response.json();
+                // Parallel Fetch
+                const [userRes, repoRes] = await Promise.all([
+                    fetch(`https://api.github.com/users/${GITHUB_USERNAME}`),
+                    fetch(`https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=100`)
+                ]);
 
-                // Update DOM elements if data exists
-                if (data.name) document.getElementById('profile-name').textContent = data.name;
-                if (data.avatar_url) document.getElementById('profile-img').src = data.avatar_url;
-                if (data.bio) document.getElementById('profile-bio').textContent = data.bio;
-                document.getElementById('followers').textContent = data.followers;
-                document.getElementById('public-repos').textContent = data.public_repos;
+                globalUserData = await userRes.json();
+                let repos = await repoRes.json();
                 
-                if (data.location) {
-                    document.getElementById('location').textContent = data.location;
-                } else {
-                    document.getElementById('location-container').style.display = 'none';
-                }
+                // Hide specific repos if needed
+                const hiddenRepos = ['Okan-ozdemir.github.io', 'Okan-ozdemir'];
+                repos = repos.filter(repo => !hiddenRepos.includes(repo.name));
+                globalRepoData = repos;
 
-            } catch (error) {
-                console.error('Profil yüklenirken hata:', error);
+                // Update UI (Hero)
+                if(globalUserData.bio) document.getElementById('bio-text').innerText = globalUserData.bio;
+                if(globalUserData.avatar_url) document.getElementById('profile-img').src = globalUserData.avatar_url;
+
+                // Update UI (Grid)
+                populateGrid(repos.slice(0, 9)); // Top 9
+
+            } catch (error) { console.error("Data Fetch Error:", error); }
+        }
+
+        function populateGrid(repos) {
+            const grid = document.getElementById('projects-grid');
+            const langColors = { 'JavaScript': 'text-yellow-400', 'TypeScript': 'text-blue-400', 'Python': 'text-blue-500', 'HTML': 'text-orange-500', 'CSS': 'text-blue-300', 'Vue': 'text-green-400', 'C#': 'text-green-500' };
+            
+            document.getElementById('loader').classList.add('hidden');
+            grid.classList.remove('hidden');
+            grid.innerHTML = '';
+
+            repos.forEach((repo) => {
+                const langClass = langColors[repo.language] || 'text-gray-400';
+                let liveLinkHtml = repo.homepage ? `<a href="${repo.homepage}" target="_blank" class="flex items-center gap-1 text-cyber-secondary hover:text-white transition-colors text-sm font-bold"><i class="fas fa-bolt"></i> DEMO</a>` : '';
+
+                const card = document.createElement('div');
+                card.className = 'holo-card p-6 rounded-xl flex flex-col h-full';
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-4">
+                        <i class="far fa-folder text-3xl text-cyber-primary"></i>
+                        <div class="flex gap-3">${liveLinkHtml}<a href="${repo.html_url}" target="_blank" class="text-gray-400 hover:text-white transition-colors text-xl"><i class="fab fa-github"></i></a></div>
+                    </div>
+                    <h3 class="text-xl font-orbitron font-bold text-white mb-2 truncate">${repo.name}</h3>
+                    <p class="text-gray-400 text-sm font-mono mb-6 flex-grow line-clamp-3 leading-relaxed">${repo.description || 'No description found.'}</p>
+                    <div class="flex items-center justify-between mt-auto pt-4 border-t border-white/5">
+                        <span class="font-mono text-sm ${langClass}">${repo.language || 'Code'}</span>
+                        <div class="flex gap-4 text-sm text-gray-500 font-mono"><span><i class="fas fa-star text-yellow-500/80"></i> ${repo.stargazers_count}</span><span><i class="fas fa-code-branch"></i> ${repo.forks_count}</span></div>
+                    </div>`;
+                grid.appendChild(card);
+            });
+        }
+
+        // --- TERMINAL LOGIC ---
+        const terminalOverlay = document.getElementById('terminal-overlay');
+        const hiddenInput = document.getElementById('hidden-input');
+        const typedCommandSpan = document.getElementById('typed-command');
+        const terminalHistory = document.getElementById('terminal-history');
+        const terminalBody = document.getElementById('terminal-body');
+
+        function toggleTerminal() {
+            terminalOverlay.classList.toggle('hidden');
+            terminalOverlay.classList.toggle('flex');
+            if(!terminalOverlay.classList.contains('hidden')) {
+                hiddenInput.focus();
+                terminalBody.scrollTop = terminalBody.scrollHeight;
             }
         }
 
-        // Fetch Repositories
-        async function fetchRepos() {
-            const container = document.getElementById('repos-container');
-            try {
-                const response = await fetch(reposApiUrl);
-                if (!response.ok) throw new Error('Repolar çekilemedi');
-                const repos = await response.json();
+        hiddenInput.addEventListener('input', () => {
+            typedCommandSpan.textContent = hiddenInput.value;
+        });
 
-                // Clear loading spinner
-                container.innerHTML = '';
-
-                if (repos.length === 0) {
-                    container.innerHTML = '<p class="col-span-full text-center text-gray-500">Henüz public bir depo bulunmuyor.</p>';
-                    return;
+        hiddenInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const cmd = hiddenInput.value.trim();
+                if(cmd) {
+                    processCommand(cmd);
                 }
+                hiddenInput.value = '';
+                typedCommandSpan.textContent = '';
+            }
+        });
 
-                repos.forEach(repo => {
-                    const card = document.createElement('div');
-                    card.className = 'repo-card bg-[#0d1117] border border-github-border rounded-lg p-6 flex flex-col transition-all duration-300 shadow-sm';
-                    
-                    // Language color determination
-                    const langColor = getLanguageColor(repo.language);
+        function execCmd(cmd) {
+            processCommand(cmd);
+        }
 
-                    card.innerHTML = `
-                        <div class="flex justify-between items-start mb-4">
-                            <div class="flex items-center text-blue-400">
-                                <i class="fas fa-book-bookmark mr-2"></i>
-                                <h3 class="font-bold text-lg truncate" title="${repo.name}">${repo.name}</h3>
-                            </div>
-                            <span class="text-xs border border-github-border px-2 py-1 rounded-full text-gray-400">Public</span>
-                        </div>
-                        
-                        <p class="text-gray-400 text-sm mb-6 flex-grow line-clamp-3">
-                            ${repo.description ? repo.description : 'Açıklama girilmemiş.'}
-                        </p>
-                        
-                        <div class="flex items-center justify-between text-xs text-gray-500 mt-auto">
-                            <div class="flex items-center space-x-4">
-                                ${repo.language ? `<span class="flex items-center"><span class="w-3 h-3 rounded-full mr-1" style="background-color: ${langColor}"></span>${repo.language}</span>` : ''}
-                                <span class="flex items-center"><i class="far fa-star mr-1"></i>${repo.stargazers_count}</span>
-                                <span class="flex items-center"><i class="fas fa-code-branch mr-1"></i>${repo.forks_count}</span>
-                            </div>
-                        </div>
-                        
-                        <div class="mt-4 pt-4 border-t border-github-border flex justify-between">
-                            <a href="${repo.html_url}" target="_blank" class="text-sm font-medium text-white hover:text-blue-400 flex items-center">
-                                İncele <i class="fas fa-external-link-alt ml-1 text-xs"></i>
-                            </a>
-                            ${repo.homepage ? `<a href="${repo.homepage}" target="_blank" class="text-sm font-medium text-green-400 hover:text-green-300">Demo</a>` : ''}
-                        </div>
+        function promptAI() {
+            const q = prompt("AI System Query:");
+            if(q) processCommand(`ask ${q}`);
+        }
+
+        async function processCommand(rawCmd) {
+            const cmd = rawCmd.split(' ')[0].toLowerCase();
+            const args = rawCmd.split(' ').slice(1).join(' ');
+
+            // Print Command
+            const cmdLine = document.createElement('div');
+            cmdLine.innerHTML = `<span class="text-blue-400">guest@okan:~$</span> <span class="text-white">${rawCmd}</span>`;
+            terminalHistory.appendChild(cmdLine);
+
+            // Process
+            const output = document.createElement('div');
+            output.className = "mb-4 ml-4 text-gray-300 border-l border-gray-700 pl-2";
+
+            switch(cmd) {
+                case 'help':
+                    output.innerHTML = `
+                        Available Commands:<br>
+                        - <span class="text-white">whoami</span> : Fetch profile stats<br>
+                        - <span class="text-white">projects</span> : Scroll to projects grid<br>
+                        - <span class="text-purple-400">ai_scan</span> : Run Gemini Analysis<br>
+                        - <span class="text-purple-400">ask [query]</span> : Chat with Gemini<br>
+                        - <span class="text-white">clear</span> : Clear terminal<br>
+                        - <span class="text-red-400">exit</span> : Close terminal
                     `;
-                    container.appendChild(card);
-                });
-
-            } catch (error) {
-                console.error('Repo hatası:', error);
-                container.innerHTML = '<p class="col-span-full text-center text-red-400">Projeler yüklenirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.</p>';
+                    break;
+                case 'projects':
+                    output.innerHTML = "Navigating to project sector...";
+                    toggleTerminal();
+                    document.getElementById('projects').scrollIntoView({ behavior: 'smooth' });
+                    break;
+                case 'clear':
+                    terminalHistory.innerHTML = '';
+                    output.remove();
+                    break;
+                case 'exit':
+                    toggleTerminal();
+                    output.remove();
+                    break;
+                case 'whoami':
+                    output.innerHTML = globalUserData ? 
+                        `User: ${globalUserData.name}<br>Loc: ${globalUserData.location}<br>Bio: ${globalUserData.bio}` : 
+                        "Data not loaded.";
+                    break;
+                case 'ai_scan':
+                    output.innerHTML = `<span class="text-purple-400 animate-pulse">Initializing Neural Scan... (Gemini API)</span>`;
+                    terminalHistory.appendChild(output);
+                    await runGeminiScan(output);
+                    return; // async handler takes over
+                case 'ask':
+                    if(!args) { output.innerHTML = "Usage: ask [your question]"; break; }
+                    output.innerHTML = `<span class="text-purple-400 animate-pulse">Querying AI Core...</span>`;
+                    terminalHistory.appendChild(output);
+                    await runGeminiChat(args, output);
+                    return;
+                default:
+                    output.innerHTML = `Command not found: ${cmd}`;
             }
+
+            if(output.innerHTML) terminalHistory.appendChild(output);
+            terminalBody.scrollTop = terminalBody.scrollHeight;
         }
 
-        // Helper: Github Language Colors
-        function getLanguageColor(lang) {
-            const colors = {
-                'JavaScript': '#f1e05a',
-                'Python': '#3572A5',
-                'HTML': '#e34c26',
-                'CSS': '#563d7c',
-                'TypeScript': '#2b7489',
-                'Vue': '#41b883',
-                'Java': '#b07219',
-                'C#': '#178600',
-                'PHP': '#4F5D95',
-                'C++': '#f34b7d'
+        // --- GEMINI FUNCTIONS ---
+        async function runGeminiScan(outputElement) {
+            if(!globalUserData || !globalRepoData) {
+                outputElement.innerHTML = "Error: Data source missing.";
+                return;
+            }
+            
+            const context = {
+                user: globalUserData,
+                repos: globalRepoData.slice(0, 5).map(r => ({name: r.name, lang: r.language, desc: r.description}))
             };
-            return colors[lang] || '#8b949e';
+
+            const systemPrompt = `You are a Cyberpunk System AI. Analyze this developer data. 
+            Style: High-tech, robotic, short sentences. 
+            Output: 
+            1. THREAT LEVEL (Based on code volume, be funny)
+            2. SKILL MATRIX (Infer from languages)
+            3. PSYCH PROFILE. 
+            Keep it under 100 words. Format with Markdown.`;
+
+            try {
+                const text = await callGeminiAPI(JSON.stringify(context), systemPrompt);
+                outputElement.innerHTML = `<div class="markdown-content text-purple-300">${marked.parse(text)}</div>`;
+            } catch (e) {
+                outputElement.innerHTML = `<span class="text-red-500">Neural Link Failed: ${e.message}</span>`;
+            }
+            terminalBody.scrollTop = terminalBody.scrollHeight;
         }
 
-        // Init
-        fetchProfile();
-        fetchRepos();
+        async function runGeminiChat(query, outputElement) {
+             const systemPrompt = "You are a helpful AI assistant for Okan Özdemir's portfolio. Be concise, technical, and friendly.";
+             try {
+                 const text = await callGeminiAPI(query, systemPrompt);
+                 outputElement.innerHTML = `<div class="markdown-content text-white">${marked.parse(text)}</div>`;
+             } catch (e) {
+                 outputElement.innerHTML = `<span class="text-red-500">Connection Error.</span>`;
+             }
+             terminalBody.scrollTop = terminalBody.scrollHeight;
+        }
 
+        async function callGeminiAPI(userQuery, systemInstructions) {
+             const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+             const payload = {
+                 contents: [{ parts: [{ text: userQuery }] }],
+                 systemInstruction: { parts: [{ text: systemInstructions }] }
+             };
+             const response = await fetch(url, {
+                 method: 'POST',
+                 headers: { 'Content-Type': 'application/json' },
+                 body: JSON.stringify(payload)
+             });
+             if (!response.ok) throw new Error('API Error');
+             const data = await response.json();
+             return data.candidates?.[0]?.content?.parts?.[0]?.text || "No data.";
+        }
+
+        // INIT
+        initParticles(); animate(); fetchAllData();
     </script>
 </body>
 </html>
